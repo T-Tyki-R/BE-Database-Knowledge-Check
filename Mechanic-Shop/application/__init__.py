@@ -1,6 +1,6 @@
 # Imports
 from flask import Flask
-from .extensions import ma
+from .extensions import ma, limiter, cache
 from .models import db
 from .blueprints.Consumer import consumer_bp
 from .blueprints.Mechanic import mechanic_bp
@@ -9,6 +9,7 @@ from .blueprints.Service_Tickets import service_ticket_bp
 def create_app(config_name):
     # Create Flask application instance
     app = Flask(__name__)
+
     # Load configuration
     app.config.from_object(f"config.{config_name}")
 
@@ -17,6 +18,12 @@ def create_app(config_name):
 
     # Initialize SQLAlchemy
     db.init_app(app)
+
+    # Initialize Limiter
+    limiter.init_app(app)
+
+    # Initialize Cache
+    cache.init_app(app)
 
     # Register Blueprints
     app.register_blueprint(consumer_bp, url_prefix='/consumers')

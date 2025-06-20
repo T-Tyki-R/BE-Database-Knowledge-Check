@@ -8,3 +8,4 @@ class ConsumerSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
 
 consumer_schema = ConsumerSchema()
+logins_schema = ConsumerSchema(exclude=('name', 'phone'))  # Exclude sensitive fields for login

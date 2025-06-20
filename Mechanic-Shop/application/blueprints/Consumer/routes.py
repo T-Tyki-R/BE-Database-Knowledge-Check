@@ -1,9 +1,12 @@
 # Imports
 from flask import request, jsonify
 from marshmallow import ValidationError
+from select import select
 from application.models import Consumer, db
-from .consumerSchema import consumer_schema
+from application.extensions import limiter, cache
+from .consumerSchema import consumer_schema, logins_schema
 from . import consumer_bp
+from application.Utils.util import encode_token
 
 # Create Endpoints for CRUD operations
 # Consumer Endpoints
@@ -13,8 +16,37 @@ from . import consumer_bp
 # PUT to UPDATE a Consumer
 # DELETE a Consumer
 
+# POST Login Endpoint
+@consumer_bp.route("/login", methods=['POST'])
+def login():
+    try:
+        # Create credentials
+        creditials = logins_schema.load(request.json)
+        email = creditials['email']
+        password = creditials['password']
+
+    except ValidationError as e:
+        return jsonify(e.messages), 400   
+    
+    query = select(Consumer).where(Consumer.email == email, Consumer.password == password)
+    consumer = db.session.execute(query).scalar().first()
+
+    if consumer and consumer.password == password:
+        # Generate JWT token
+        token = encode_token(consumer.consumer_id)
+        response = {
+            "status": "success",
+            "message": "Login successful",
+            "token": token
+        }
+
+        return jsonify(response), 200
+    else:
+        return jsonify({"message": "Invalid email or password"}), 401
+
 # GET all Consumers
 @consumer_bp.route('/consumers', methods=['GET'])
+@cache.cached(timeout=60)  # Cache the response for 60 seconds
 def get_consumers():
     consumers = db.session.query(Consumer).all()
     return jsonify(consumer_schema.dump(consumers, many=True)), 200
@@ -33,6 +65,7 @@ def get_consumer(consumer_id):
 
 # POST a NEW Consumer
 @consumer_bp.route('/consumers', methods=['POST'])
+@limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_consumer():
     try:
         name = request.json.get('name')

@@ -18,6 +18,7 @@ class Consumer(Base):
     name: Mapped[str] = mapped_column(db.String(255), nullable=False)
     email: Mapped[str] = mapped_column(db.String(100), nullable=False, unique=True)
     phone: Mapped[str] = mapped_column(db.String(20), nullable=False)
+    password: Mapped[str] = mapped_column(db.String(255), nullable=False)
 
 # Mechanic Class
 class Mechanic(Base):
