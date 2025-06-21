@@ -1,7 +1,7 @@
 # Imports
 from flask import request, jsonify
 from marshmallow import ValidationError
-from select import select
+from sqlalchemy import select
 from application.models import Consumer, db
 from application.extensions import limiter, cache
 from .consumerSchema import consumer_schema, logins_schema
@@ -16,33 +16,10 @@ from application.Utils.util import encode_token
 # PUT to UPDATE a Consumer
 # DELETE a Consumer
 
-# POST Login Endpoint
-@consumer_bp.route("/login", methods=['POST'])
-def login():
-    try:
-        # Create credentials
-        creditials = logins_schema.load(request.json)
-        email = creditials['email']
-        password = creditials['password']
+# Create @Token_Required wrapper that''' validate the token and retrun the consumer_id
 
-    except ValidationError as e:
-        return jsonify(e.messages), 400   
-    
-    query = select(Consumer).where(Consumer.email == email, Consumer.password == password)
-    consumer = db.session.execute(query).scalar().first()
 
-    if consumer and consumer.password == password:
-        # Generate JWT token
-        token = encode_token(consumer.consumer_id)
-        response = {
-            "status": "success",
-            "message": "Login successful",
-            "token": token
-        }
 
-        return jsonify(response), 200
-    else:
-        return jsonify({"message": "Invalid email or password"}), 401
 
 # GET all Consumers
 @consumer_bp.route('/consumers', methods=['GET'])
@@ -71,7 +48,8 @@ def create_consumer():
         name = request.json.get('name')
         email = request.json.get('email')
         phone = request.json.get('phone')
-        new_consumer = Consumer(name=name, email=email, phone=phone)
+        password = request.json.get('password')
+        new_consumer = Consumer(name=name, email=email, phone=phone, password=password)
         db.session.add(new_consumer)
         db.session.commit()
         return jsonify({
@@ -116,3 +94,33 @@ def delete_consumer(consumer_id):
             return jsonify(e.messages), 400
     else:
         return jsonify({"message": "Consumer not found"}), 404
+    
+# POST Login Endpoint
+@consumer_bp.route("/login", methods=['POST'])
+def login():
+    try:
+        # Create credentials
+        creditials = logins_schema.load(request.json)
+        email = creditials.email
+        password = creditials.password
+
+    except ValidationError as e:
+        return jsonify(e.messages), 400   
+    
+    query = select(Consumer).where(
+        Consumer.email == email,
+        Consumer.password == password
+    )
+    consumer = db.session.execute(query).scalars().first()
+
+    if consumer:
+        # Generate JWT token
+        token = encode_token(consumer.consumer_id)
+        response = {
+            "status": "success",
+            "message": "Login successful",
+            "token": token
+        }
+        return jsonify(response), 200
+    else:
+        return jsonify({"message": "Invalid email or password"}), 401
