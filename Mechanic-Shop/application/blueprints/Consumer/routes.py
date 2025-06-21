@@ -6,7 +6,7 @@ from application.models import Consumer, db
 from application.extensions import limiter, cache
 from .consumerSchema import consumer_schema, logins_schema
 from . import consumer_bp
-from application.Utils.util import encode_token
+from application.Utils.util import encode_token, token_required
 
 # Create Endpoints for CRUD operations
 # Consumer Endpoints
@@ -15,11 +15,6 @@ from application.Utils.util import encode_token
 # POST a NEW Consumer
 # PUT to UPDATE a Consumer
 # DELETE a Consumer
-
-# Create @Token_Required wrapper that''' validate the token and retrun the consumer_id
-
-
-
 
 # GET all Consumers
 @consumer_bp.route('/consumers', methods=['GET'])
@@ -60,7 +55,8 @@ def create_consumer():
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
 
 # PUT to UPDATE a Consumer
-@consumer_bp.route('/consumers/<int:consumer_id>', methods=['PUT'])
+@consumer_bp.route('/', methods=['PUT'])
+@token_required
 def update_consumer(consumer_id):
     consumer = db.session.get(Consumer, consumer_id)
     if consumer:
@@ -68,9 +64,11 @@ def update_consumer(consumer_id):
             name = request.json.get('name')
             email = request.json.get('email')
             phone = request.json.get('phone')
+            password = request.json.get('password')
             consumer.name = name
             consumer.email = email
             consumer.phone = phone
+            consumer.password = password
             db.session.commit()
             return jsonify({
                 "message": f"Consumer #{consumer_id} was updated successfully",
@@ -82,7 +80,8 @@ def update_consumer(consumer_id):
         return jsonify({"message": "Consumer not found"}), 404
 
 # DELETE a Consumer
-@consumer_bp.route('/consumers/<int:consumer_id>', methods=['DELETE'])
+@consumer_bp.route('/', methods=['DELETE'])
+@token_required
 def delete_consumer(consumer_id):
     consumer = db.session.get(Consumer, consumer_id)
     if consumer:

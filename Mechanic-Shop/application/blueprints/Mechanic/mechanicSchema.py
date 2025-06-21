@@ -8,3 +8,4 @@ class MechanicSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
 
 mechanic_schema = MechanicSchema()
+logins_schema = MechanicSchema(exclude=('name', 'phone', 'salary'))  # Exclude sensitive fields for login
