@@ -1,5 +1,6 @@
 # Imports
 from application.extensions import ma
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from application.models import Consumer
 
 class ConsumerSchema(ma.SQLAlchemyAutoSchema):

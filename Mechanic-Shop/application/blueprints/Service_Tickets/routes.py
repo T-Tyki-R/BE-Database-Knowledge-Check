@@ -3,7 +3,7 @@ from flask import request, jsonify
 from sqlalchemy import select
 from marshmallow import ValidationError
 from application.models import ServiceTicket, db, Mechanic, Consumer
-from .serviceTicketSchema import service_ticket_schema, return_service_ticket_schema, edit_ticket_schema
+from .serviceTicketSchema import service_ticket_schema, return_service_ticket_schema, edit_ticket_schema, create_service_ticket_schema
 from . import service_ticket_bp
 
 # Create Endpoints for CRUD operations
@@ -25,9 +25,9 @@ def get_service_tickets():
 @service_ticket_bp.route('/service_tickets', methods=['POST'])
 def create_service_ticket():
     #check to see if consumer_id exists, if not, throw error
-    print("Schema fields:", list(service_ticket_schema.fields.keys()))
+    print("Schema fields:", list(create_service_ticket_schema.fields.keys()))
     try:
-        ticket_data = service_ticket_schema.load(request.json)
+        ticket_data = create_service_ticket_schema.load(request.json)
     except ValidationError as e:
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
     
@@ -45,11 +45,11 @@ def create_service_ticket():
             new_ticket.mechanics.append(mechanic)
         else:
             return jsonify({"message": "Invalid Mechanic ID..."}), 400
-        
-        db.session.add(new_ticket)
-        db.session.commit()
+    
+    db.session.add(new_ticket)
+    db.session.commit()
 
-        return return_service_ticket_schema.jsonify(new_ticket), 201
+    return return_service_ticket_schema.jsonify(new_ticket), 201
 
 # DELETE a service_ticket
 @service_ticket_bp.route('/service_tickets/<int:service_ticket_id>', methods=['DELETE'])
