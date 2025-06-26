@@ -1,0 +1,481 @@
+{
+  "info": {
+    "_postman_id": "mechanic-shop-api-collection",
+    "name": "Mechanic Shop API",
+    "description": "Complete API collection for the Mechanic Shop management system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Consumers",
+      "item": [
+        {
+          "name": "Get All Consumers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/consumers/consumers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumers",
+                "consumers"
+              ]
+            },
+            "description": "Retrieve all consumers from the database"
+          }
+        },
+        {
+          "name": "Get Consumer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/consumers/consumers/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumers",
+                "consumers",
+                "1"
+              ]
+            },
+            "description": "Retrieve a specific consumer by their ID"
+          }
+        },
+        {
+          "name": "Create New Consumer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"555-1234\",\n    \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/consumers/consumers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumers",
+                "consumers"
+              ]
+            },
+            "description": "Create a new consumer account"
+          }
+        },
+        {
+          "name": "Update Consumer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{consumer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"555-5678\",\n    \"password\": \"newsecurepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/consumers/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumers",
+                ""
+              ]
+            },
+            "description": "Update consumer information (requires authentication)"
+          }
+        },
+        {
+          "name": "Delete Consumer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{consumer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/consumers/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumers",
+                ""
+              ]
+            },
+            "description": "Delete a consumer account (requires authentication)"
+          }
+        },
+        {
+          "name": "Consumer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"consumer_token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/consumers/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "consumers",
+                "login"
+              ]
+            },
+            "description": "Login as a consumer and receive JWT token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mechanics",
+      "item": [
+        {
+          "name": "Get All Mechanics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mechanics/mechanics",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mechanics",
+                "mechanics"
+              ]
+            },
+            "description": "Retrieve all mechanics from the database"
+          }
+        },
+        {
+          "name": "Get Mechanic by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mechanics/mechanics/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mechanics",
+                "mechanics",
+                "1"
+              ]
+            },
+            "description": "Retrieve a specific mechanic by their ID"
+          }
+        },
+        {
+          "name": "Create New Mechanic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Mike Johnson\",\n    \"email\": \"mike.johnson@mechanicshop.com\",\n    \"phone\": \"555-9876\",\n    \"salary\": 65000.00,\n    \"password\": \"mechanicpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mechanics/mechanics",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mechanics",
+                "mechanics"
+              ]
+            },
+            "description": "Create a new mechanic account"
+          }
+        },
+        {
+          "name": "Update Mechanic",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{mechanic_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Michael Johnson\",\n    \"email\": \"michael.johnson@mechanicshop.com\",\n    \"phone\": \"555-9999\",\n    \"salary\": 70000.00,\n    \"password\": \"newmechanicpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mechanics/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mechanics",
+                ""
+              ]
+            },
+            "description": "Update mechanic information (requires authentication)"
+          }
+        },
+        {
+          "name": "Delete Mechanic",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{mechanic_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/mechanics/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mechanics",
+                ""
+              ]
+            },
+            "description": "Delete a mechanic account (requires authentication)"
+          }
+        },
+        {
+          "name": "Mechanic Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"mechanic_token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"mike.johnson@mechanicshop.com\",\n    \"password\": \"mechanicpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/mechanics/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mechanics",
+                "login"
+              ]
+            },
+            "description": "Login as a mechanic and receive JWT token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Tickets",
+      "item": [
+        {
+          "name": "Get All Service Tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/service-tickets/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "service-tickets",
+                ""
+              ]
+            },
+            "description": "Retrieve all service tickets from the database"
+          }
+        },
+        {
+          "name": "Create New Service Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"consumer_id\": 1,\n    \"vin\": \"1HGBH41JXMN109186\",\n    \"service_date\": \"2025-06-26\",\n    \"description\": \"Oil change and tire rotation\",\n    \"mechanics\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/service-tickets/service_tickets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "service-tickets",
+                "service_tickets"
+              ]
+            },
+            "description": "Create a new service ticket"
+          }
+        },
+        {
+          "name": "Get Service Ticket by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/service-tickets/service_tickets/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "service-tickets",
+                "service_tickets",
+                "1"
+              ]
+            },
+            "description": "Retrieve a specific service ticket by ID"
+          }
+        },
+        {
+          "name": "Update Service Ticket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"consumer_id\": 1,\n    \"vin\": \"1HGBH41JXMN109186\",\n    \"service_date\": \"2025-06-27\",\n    \"description\": \"Oil change, tire rotation, and brake inspection\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/service-tickets/service_tickets/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "service-tickets",
+                "service_tickets",
+                "1"
+              ]
+            },
+            "description": "Update an existing service ticket"
+          }
+        },
+        {
+          "name": "Delete Service Ticket",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/service-tickets/service_tickets/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "service-tickets",
+                "service_tickets",
+                "1"
+              ]
+            },
+            "description": "Delete a service ticket"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}
