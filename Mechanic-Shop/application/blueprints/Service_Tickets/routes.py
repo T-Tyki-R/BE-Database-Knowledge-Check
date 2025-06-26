@@ -3,7 +3,7 @@ from flask import request, jsonify
 from sqlalchemy import select
 from marshmallow import ValidationError
 from application.models import ServiceTicket, db, Mechanic, Consumer
-from .serviceTicketSchema import service_ticket_schema, service_tickets_schema, return_service_ticket_schema, edit_ticket_schema
+from .serviceTicketSchema import service_ticket_schema, return_service_ticket_schema, edit_ticket_schema
 from . import service_ticket_bp
 
 # Create Endpoints for CRUD operations
@@ -25,6 +25,7 @@ def get_service_tickets():
 @service_ticket_bp.route('/service_tickets', methods=['POST'])
 def create_service_ticket():
     #check to see if consumer_id exists, if not, throw error
+    print("Schema fields:", list(service_ticket_schema.fields.keys()))
     try:
         ticket_data = service_ticket_schema.load(request.json)
     except ValidationError as e:
@@ -55,7 +56,7 @@ def create_service_ticket():
 def delete_service_ticket(service_ticket_id):
     service_ticket = select(ServiceTicket).where(ServiceTicket.ticket_id == service_ticket_id)
     ticket = db.session.execute(service_ticket).scalars().first()
-
+    
     db.session.delete(ticket)
     db.session.commit()
 
