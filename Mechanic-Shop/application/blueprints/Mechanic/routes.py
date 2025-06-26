@@ -126,3 +126,10 @@ def login():
         return jsonify(response), 200
     else:
         return jsonify({"message": "Invalid email or password"}), 401
+    
+# GET Display ALL Mechanics (Most - Least Number Tickets)
+@mechanic_bp.route("/popularity", methods=['GET'])
+def popularity_mechanic():
+    query = select(Mechanic)
+    mechanics = db.session.execute(query).scalars().all()
+    print(mechanics)

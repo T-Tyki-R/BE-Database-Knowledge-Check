@@ -1,8 +1,9 @@
 # Imports
 from flask import request, jsonify
+from sqlalchemy import select
 from marshmallow import ValidationError
-from application.models import ServiceTicket, db
-from .serviceTicketSchema import service_ticket_schema
+from application.models import ServiceTicket, db, Mechanic, Consumer
+from .serviceTicketSchema import service_ticket_schema, service_tickets_schema, return_service_ticket_schema, edit_ticket_schema
 from . import service_ticket_bp
 
 # Create Endpoints for CRUD operations
@@ -14,83 +15,77 @@ from . import service_ticket_bp
 # DELETE a Service Ticket
 
 # GET all service_tickets
-@service_ticket_bp.route('/service_tickets', methods=['GET'])
+@service_ticket_bp.route('/', methods=['GET'])
 def get_service_tickets():
-    ticket = db.session.query(ServiceTicket).all()
-    return jsonify(service_ticket_schema.dump(ticket, many=True)), 200
-
-# GET SPECIFIC service_ticket by ID
-@service_ticket_bp.route('/service_tickets/<int:service_ticket_id>', methods=['GET'])
-def get_service_ticket(service_ticket_id):
-    service_ticket = db.session.get(ServiceTicket, service_ticket_id)
-    if service_ticket:
-        return jsonify({
-            "message": "Service ticket found",
-            "service_ticket": service_ticket_schema.dump(service_ticket)
-        }), 200
-    else:
-        return jsonify({"message": "Service ticket not found"}), 404
+    tickets = select(ServiceTicket)
+    res = db.session.execute(tickets).scalars().all()
+    return service_ticket_schema.jsonify(res), 200
 
 # POST a NEW service_ticket
 @service_ticket_bp.route('/service_tickets', methods=['POST'])
 def create_service_ticket():
     #check to see if consumer_id exists, if not, throw error
     try:
-        consumer_id = request.json.get('consumer_id')
-        if not consumer_id:
-            return jsonify({"message": "consumer_id is required"}), 400
-        vin = request.json.get('vin')
-        service_date = request.json.get('service_date')
-        description = request.json.get('description')
-        new_service_ticket = ServiceTicket(
-            consumer_id=consumer_id,
-            vin=vin,
-            service_date=service_date,
-            description=description
-        )
-        db.session.add(new_service_ticket)
-        db.session.commit()
-        return jsonify({
-            "message": "Service ticket created successfully",
-            "service_ticket": service_ticket_schema.dump(new_service_ticket)
-        }), 201
+        ticket_data = service_ticket_schema.load(request.json)
     except ValidationError as e:
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
+    
+    
 
-# PUT to UPDATE a service_ticket
-@service_ticket_bp.route('/service_tickets/<int:service_ticket_id>', methods=['PUT'])
-def update_service_ticket(service_ticket_id):
-    service_ticket = db.session.get(ServiceTicket, service_ticket_id)
-    if service_ticket:
-        try:
-            consumer_id = request.json.get('consumer_id')
-            vin = request.json.get('vin')
-            service_date = request.json.get('service_date')
-            description = request.json.get('description')
-            service_ticket.consumer_id = consumer_id
-            service_ticket.vin = vin
-            service_ticket.service_date = service_date
-            service_ticket.description = description
-            db.session.commit()
-            return jsonify({
-                "message": f"service_ticket #{service_ticket_id} was updated successfully",
-                "service_ticket": service_ticket_schema.dump(service_ticket)
-            }), 200
-        except ValidationError as e:
-            return jsonify({"message": "Invalid input", "errors": e.messages}), 400
-    else:
-        return jsonify({"message": "service_ticket not found"}), 404
+    new_ticket = ServiceTicket(service_date= ticket_data['service_date'],
+                               consumer_id= ticket_data['consumer_id'],
+                               vin= ticket_data['vin'],
+                               description= ticket_data['description'])
+    
+    for mechanic_id in ticket_data["mechanics"]:
+        query = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
+        mechanic = db.session.execute(query).scalar()
+        if mechanic:
+            new_ticket.mechanics.append(mechanic)
+        else:
+            return jsonify({"message": "Invalid Mechanic ID..."}), 400
+        
+        db.session.add(new_ticket)
+        db.session.commit()
+
+        return return_service_ticket_schema.jsonify(new_ticket), 201
 
 # DELETE a service_ticket
 @service_ticket_bp.route('/service_tickets/<int:service_ticket_id>', methods=['DELETE'])
 def delete_service_ticket(service_ticket_id):
-    service_ticket = db.session.get(ServiceTicket, service_ticket_id)
-    if service_ticket:
-        try:
-            db.session.delete(service_ticket)
-            db.session.commit()
-            return jsonify({"message": f"service_ticket #{service_ticket_id} was successfully deleted"}), 200
-        except ValidationError as e:
-            return jsonify(e.messages), 400
-    else:
-        return jsonify({"message": "service_ticket not found"}), 404
+    service_ticket = select(ServiceTicket).where(ServiceTicket.ticket_id == service_ticket_id)
+    ticket = db.session.execute(service_ticket).scalars().first()
+
+    db.session.delete(ticket)
+    db.session.commit()
+
+    return jsonify({"message": f"service_ticket #{service_ticket_id} was successfully deleted"}), 200
+    
+    
+# PUT Edit tickets
+@service_ticket_bp.route("/<int:service_ticket_id>", methods=['PUT'])
+def edit_tickets(service_ticket_id):
+    try: 
+       ticket_edit = edit_ticket_schema.load(request.json)
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    
+    query = select(ServiceTicket).where(ServiceTicket.ticket_id == service_ticket_id)
+    ticket = db.session.execute(query).scalars().first()
+
+    for mechanic_id in ticket_edit['add_mechanic_ids']:
+        query = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
+        mechanic = db.session.execute(query).scalars().first()
+
+        if mechanic and mechanic not in ticket.mechanics:
+            ticket.mechanics.append(mechanic)
+
+    for mechanic_id in ticket_edit['remove_mechanic_ids']:
+        query = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
+        mechanic = db.session.execute(query).scalars().first()
+
+        if mechanic and mechanic in ticket.mechanics:
+            ticket.mechanics.remove(mechanic)    
+
+    db.session.commit()
+    return return_service_ticket_schema.jsonify(ticket)
