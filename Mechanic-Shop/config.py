@@ -1,5 +1,5 @@
 class DevelopmentConfig:
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Coconut1@localhost/mechanic_shop'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Saiouma2018@localhost/mechanic_shop'
     DEBUG = True
     # Redis configuration for Flask-Limiter
     RATELIMIT_STORAGE_URI = 'redis://localhost:6379/0'

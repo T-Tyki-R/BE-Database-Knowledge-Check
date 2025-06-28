@@ -5,8 +5,6 @@ from application.models import ServiceTicket
 from marshmallow import fields
 
 class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):
-    # consumer_id = fields.Int() # Kept getting keyword error. gitCopilot suggested this
-    # mechnaic_id = fields.List(fields.Int(), load_only = True, required= True)
     mechanics = fields.Nested("MechanicSchema", many=True)
     consumer = fields.Nested("ConsumerSchema")
     class Meta:
