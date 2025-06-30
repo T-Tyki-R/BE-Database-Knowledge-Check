@@ -18,10 +18,19 @@ from application.Utils.util import encode_token, token_required
 
 # GET all Mechanics
 @mechanic_bp.route('/mechanics', methods=['GET'])
-@cache.cached(timeout=60)  # Cache the response for 60 seconds
+# @cache.cached(timeout=60)  # Cache the response for 60 seconds
 def get_Mechanics():
-    mechanic = db.session.query(Mechanic).all()
-    return jsonify(mechanic_schema.dump(mechanic, many=True)), 200
+    try:
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 2))
+
+        query = select(Mechanic)
+        mechanics = db.paginate(query, page = page, per_page = per_page)
+        return jsonify(mechanic_schema.dump(mechanics.items, many=True)), 200
+    except:
+        query = select(Mechanic)
+        mechanics = db.session.execute(query).scalars().all()
+        return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
 
 # GET SPECIFIC Mechanic by ID
 @mechanic_bp.route('/mechanics/<int:mechanic_id>', methods=['GET'])
@@ -129,7 +138,22 @@ def login():
     
 # GET Display ALL Mechanics (Most - Least Number Tickets)
 @mechanic_bp.route("/popularity", methods=['GET'])
-def popularity_mechanic():
+def popular_mechanic():
     query = select(Mechanic)
     mechanics = db.session.execute(query).scalars().all()
-    print(mechanics)
+
+    # Create a lambda function sort list in descending order
+    mechanics.sort(key = lambda mechanic : len(mechanic.service_tickets), reverse = True)
+
+    return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
+
+# This will be for inventory
+@mechanic_bp.route("/search", methods=['GET'])
+def search_mechanic():
+    name = request.args.get("name")
+
+    # use the wirldcard format to allow partial input and display multiple 
+    query = select(Mechanic).where(Mechanic.name.like(f"%{name}%"))
+    mechanics = db.session.execute(query).scalars().all()
+
+    return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
