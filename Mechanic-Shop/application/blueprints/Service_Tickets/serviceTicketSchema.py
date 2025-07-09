@@ -6,11 +6,11 @@ from marshmallow import fields
 
 class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):
     mechanics = fields.Nested("MechanicSchema", many=True)
+    parts = fields.Nested("InventorySchema", many= True)
     consumer = fields.Nested("ConsumerSchema")
     class Meta:
         model = ServiceTicket
         include_fk = True 
-        # include_relationships = True
         fields = (
             ""
             "ticket_id",
@@ -19,7 +19,8 @@ class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):
             "service_date",
             "description",
             "mechanics",
-            "consumer"
+            "consumer",
+            "parts"
         )
 
 class CreateServiceTicketSchema(ma.Schema):
@@ -28,15 +29,18 @@ class CreateServiceTicketSchema(ma.Schema):
     service_date = fields.Date(required=True)
     description = fields.Str(required=True)
     mechanics = fields.List(fields.Int(), required=True)
+    parts = fields.List(fields.Int(), required= True)
     
     class Meta:
-        fields = ("consumer_id", "vin", "service_date", "description", "mechanics")
+        fields = ("consumer_id", "vin", "service_date", "description", "mechanics", "parts")
 
 class EditTicketSchema(ma.Schema):
     add_mechanic_ids = fields.List(fields.Int(), required=True)
     remove_mechanic_ids = fields.List(fields.Int(), required=True)
+    add_part_ids = fields.List(fields.Int(), required=True)
+    remove_part_ids = fields.List(fields.Int(), required=True)
     class Meta:
-        fields = ("add_mechanic_ids", "remove_mechanic_ids")
+        fields = ("add_mechanic_ids", "remove_mechanic_ids", "add_part_ids", "remove_part_ids")
 
 service_ticket_schema = ServiceTicketSchema()
 service_tickets_schema = ServiceTicketSchema(many=True)

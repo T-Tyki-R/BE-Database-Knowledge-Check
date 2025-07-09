@@ -2,7 +2,7 @@
 from flask import request, jsonify
 from sqlalchemy import select
 from marshmallow import ValidationError
-from application.models import ServiceTicket, db, Mechanic, Consumer
+from application.models import ServiceTicket, db, Mechanic, Inventory
 from .serviceTicketSchema import service_ticket_schema, return_service_ticket_schema, edit_ticket_schema, create_service_ticket_schema
 from . import service_ticket_bp
 
@@ -31,8 +31,6 @@ def create_service_ticket():
     except ValidationError as e:
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
     
-    
-
     new_ticket = ServiceTicket(service_date= ticket_data['service_date'],
                                consumer_id= ticket_data['consumer_id'],
                                vin= ticket_data['vin'],
@@ -45,6 +43,13 @@ def create_service_ticket():
             new_ticket.mechanics.append(mechanic)
         else:
             return jsonify({"message": "Invalid Mechanic ID..."}), 400
+    for inventory_id in ticket_data["parts"]:
+        query = select(Inventory).where(Inventory.inventory_id == inventory_id)
+        part = db.session.execute(query).scalar()
+        if part:
+            new_ticket.parts.append(part)
+        else:
+            return jsonify({"message": "Invalid Part ID..."}), 400
     
     db.session.add(new_ticket)
     db.session.commit()
@@ -86,7 +91,21 @@ def edit_tickets(service_ticket_id):
         mechanic = db.session.execute(query).scalars().first()
 
         if mechanic and mechanic in ticket.mechanics:
-            ticket.mechanics.remove(mechanic)    
+            ticket.mechanics.remove(mechanic) 
+
+    # Add parts
+    for inventory_id in ticket_edit['add_part_ids']:
+        query = select(Inventory).where(Inventory.inventory_id == inventory_id)
+        part = db.session.execute(query).scalars().first()
+        if part and part not in ticket.parts:
+            ticket.parts.append(part)
+
+    # Remove parts
+    for inventory_id in ticket_edit['remove_part_ids']:
+        query = select(Inventory).where(Inventory.inventory_id == inventory_id)
+        part = db.session.execute(query).scalars().first()
+        if part and part in ticket.parts:
+            ticket.parts.remove(part)
 
     db.session.commit()
     return return_service_ticket_schema.jsonify(ticket)

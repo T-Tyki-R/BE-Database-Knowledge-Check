@@ -18,6 +18,31 @@ service_mechanic = db.Table(
    db.Column("ticket_id", db.ForeignKey("service_ticket.ticket_id"))
 )
 
+service_parts = db.Table(
+    "service_parts",
+    Base.metadata,
+    db.Column("inventory_id", db.ForeignKey("inventory.inventory_id")),
+    db.Column("ticket_id", db.ForeignKey("service_ticket.ticket_id"))
+)
+
+# Service Ticket Class
+class ServiceTicket(Base):
+    __tablename__ = 'service_ticket'
+    ticket_id: Mapped[int] = mapped_column(primary_key=True)
+    consumer_id: Mapped[int] = mapped_column(db.ForeignKey("consumer.consumer_id"), nullable=False)
+    vin: Mapped[str] = mapped_column(db.String(17), nullable=False)
+    service_date: Mapped[date] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(db.String(500), nullable=False)
+
+    consumer: Mapped["Consumer"] = db.relationship(back_populates="service_tickets")
+    mechanics: Mapped[List["Mechanic"]] = db.relationship(
+        secondary=service_mechanic,
+        back_populates="service_tickets" )
+    parts:  Mapped[List["Inventory"]] = db.relationship(
+        secondary = service_parts,
+        back_populates= "service_tickets")
+
+
 # Consumer Class
 class Consumer(Base):
     __tablename__ = "consumer"
@@ -42,19 +67,16 @@ class Mechanic(Base):
     service_tickets: Mapped[List["ServiceTicket"]] = db.relationship(
         secondary=service_mechanic,
         back_populates="mechanics"
+                )
+
+class Inventory(Base):
+    __tablename__ = 'inventory'
+    inventory_id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    price: Mapped[float] = mapped_column(nullable=False)
+
+    service_tickets: Mapped[List["ServiceTicket"]] = db.relationship(
+        secondary=service_parts,
+        back_populates="parts"
     )
 
-# Service Ticket Class
-class ServiceTicket(Base):
-    __tablename__ = 'service_ticket'
-    ticket_id: Mapped[int] = mapped_column(primary_key=True)
-    consumer_id: Mapped[int] = mapped_column(db.ForeignKey("consumer.consumer_id"), nullable=False)
-    vin: Mapped[str] = mapped_column(db.String(17), nullable=False)
-    service_date: Mapped[date] = mapped_column(nullable=False)
-    description: Mapped[str] = mapped_column(db.String(500), nullable=False)
-
-    consumer: Mapped["Consumer"] = db.relationship(back_populates="service_tickets")
-    mechanics: Mapped[List["Mechanic"]] = db.relationship(
-        secondary=service_mechanic,
-        back_populates="service_tickets"
-    )
