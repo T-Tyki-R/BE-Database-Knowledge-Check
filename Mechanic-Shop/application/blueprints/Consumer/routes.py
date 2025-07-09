@@ -11,32 +11,19 @@ from application.Utils.util import encode_token, token_required
 # Create Endpoints for CRUD operations
 # Consumer Endpoints
 # GET all Consumers
-# GET SPECIFIC Consumer by ID
 # POST a NEW Consumer
 # PUT to UPDATE a Consumer
 # DELETE a Consumer
 
 # GET all Consumers
-@consumer_bp.route('/consumers', methods=['GET'])
+@consumer_bp.route('/', methods=['GET'])
 @cache.cached(timeout=60)  # Cache the response for 60 seconds
 def get_consumers():
     consumers = db.session.query(Consumer).all()
     return jsonify(consumer_schema.dump(consumers, many=True)), 200
 
-# GET SPECIFIC Consumer by ID
-@consumer_bp.route('/consumers/<int:consumer_id>', methods=['GET'])
-def get_consumer(consumer_id):
-    consumer = db.session.get(Consumer, consumer_id)
-    if consumer:
-        return jsonify({
-            "message": "Consumer found",
-            "consumer": consumer_schema.dump(consumer)
-        }), 200
-    else:
-        return jsonify({"message": "Consumer not found"}), 404
-
 # POST a NEW Consumer
-@consumer_bp.route('/consumers', methods=['POST'])
+@consumer_bp.route('/create', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_consumer():
     try:

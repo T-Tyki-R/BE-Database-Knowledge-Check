@@ -9,7 +9,6 @@ from application.Utils.util import encode_token, token_required
 # Create Endpoints for CRUD operations
 # Inventory Endpoints
 # GET all inventory parts
-# GET SPECIFIC inventory part by ID
 # POST a NEW inventory part
 # PUT to UPDATE a an inventory part
 # DELETE an inventory part
@@ -21,7 +20,7 @@ def get_part():
     return jsonify(inventory_schema.dump(parts, many=True)), 200
 
 # POST a NEW Parts
-@inventory_bp.route('/inventory', methods=['POST'])
+@inventory_bp.route('/create', methods=['POST'])
 def create_part():
     try:
         new_part = inventory_schema.load(request.json)

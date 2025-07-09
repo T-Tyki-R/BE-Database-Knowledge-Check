@@ -17,8 +17,8 @@ from application.Utils.util import encode_token, token_required
 # DELETE a Mechanic
 
 # GET all Mechanics
-@mechanic_bp.route('/mechanics', methods=['GET'])
-# @cache.cached(timeout=60)  # Cache the response for 60 seconds
+@mechanic_bp.route('/', methods=['GET'])
+@cache.cached(timeout=60)  # Cache the response for 60 seconds
 def get_Mechanics():
     try:
         page = int(request.args.get("page", 1))
@@ -32,20 +32,8 @@ def get_Mechanics():
         mechanics = db.session.execute(query).scalars().all()
         return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
 
-# GET SPECIFIC Mechanic by ID
-@mechanic_bp.route('/mechanics/<int:mechanic_id>', methods=['GET'])
-def get_Mechanic(mechanic_id):
-    mechanic = db.session.get(Mechanic, mechanic_id)
-    if mechanic:
-        return jsonify({
-            "message": "Mechanic found",
-            "Mechanic": mechanic_schema.dump(mechanic)
-        }), 200
-    else:
-        return jsonify({"message": "Mechanic not found"}), 404
-
 # POST a NEW Mechanic
-@mechanic_bp.route('/mechanics', methods=['POST'])
+@mechanic_bp.route('/create', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_Mechanic():
     try:
