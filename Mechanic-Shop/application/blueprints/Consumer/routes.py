@@ -23,7 +23,7 @@ def get_consumers():
     return jsonify(consumer_schema.dump(consumers, many=True)), 200
 
 # POST a NEW Consumer
-@consumer_bp.route('/create', methods=['POST'])
+@consumer_bp.route('/', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_consumer():
     try:

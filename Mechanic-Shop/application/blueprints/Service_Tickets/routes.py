@@ -22,7 +22,7 @@ def get_service_tickets():
     return service_ticket_schema.jsonify(res), 200
 
 # POST a NEW service_ticket
-@service_ticket_bp.route('/service_tickets', methods=['POST'])
+@service_ticket_bp.route('/', methods=['POST'])
 def create_service_ticket():
     #check to see if consumer_id exists, if not, throw error
     print("Schema fields:", list(create_service_ticket_schema.fields.keys()))
@@ -57,7 +57,7 @@ def create_service_ticket():
     return return_service_ticket_schema.jsonify(new_ticket), 201
 
 # DELETE a service_ticket
-@service_ticket_bp.route('/service_tickets/<int:service_ticket_id>', methods=['DELETE'])
+@service_ticket_bp.route('/<int:service_ticket_id>', methods=['DELETE'])
 def delete_service_ticket(service_ticket_id):
     service_ticket = select(ServiceTicket).where(ServiceTicket.ticket_id == service_ticket_id)
     ticket = db.session.execute(service_ticket).scalars().first()

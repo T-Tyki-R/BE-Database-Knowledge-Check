@@ -20,7 +20,7 @@ def get_part():
     return jsonify(inventory_schema.dump(parts, many=True)), 200
 
 # POST a NEW Parts
-@inventory_bp.route('/create', methods=['POST'])
+@inventory_bp.route('/', methods=['POST'])
 def create_part():
     try:
         new_part = inventory_schema.load(request.json)
@@ -35,7 +35,6 @@ def create_part():
 
 # PUT to UPDATE an Inventory Part
 @inventory_bp.route('/<int:inventory_id>', methods=['PUT'])
-
 def update_part(inventory_id):
     part = db.session.get(Inventory, inventory_id)
     if part:

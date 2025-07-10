@@ -33,7 +33,7 @@ def get_Mechanics():
         return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
 
 # POST a NEW Mechanic
-@mechanic_bp.route('/create', methods=['POST'])
+@mechanic_bp.route('/', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_Mechanic():
     try:
