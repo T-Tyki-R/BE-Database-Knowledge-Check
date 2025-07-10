@@ -64,13 +64,13 @@ def delete_parts(inventory_id):
 
     return jsonify({"message": f"Part ID #{inventory_id} was successfully deleted"}), 200
     
-# This will be for inventory
+
 @inventory_bp.route("/search", methods=['GET'])
-def search_mechanic():
+def search_parts():
     part = request.args.get("part")
 
     # use the wirldcard format to allow partial input and display multiple 
-    query = select(Inventory).where(Inventory.part.like(f"%{part}%"))
+    query = select(Inventory).where(Inventory.name.like(f"%{part}%"))
     parts = db.session.execute(query).scalars().all()
 
     return jsonify(inventory_schema.dump(parts, many=True)), 200

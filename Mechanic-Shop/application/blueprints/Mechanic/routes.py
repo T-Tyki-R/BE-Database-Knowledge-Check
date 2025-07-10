@@ -135,3 +135,13 @@ def popular_mechanic():
 
     return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
 
+@mechanic_bp.route("/search", methods=['GET'])
+def search_mechanic():
+    name = request.args.get("name")
+
+    # use the wirldcard format to allow partial input and display multiple 
+    query = select(Mechanic).where(Mechanic.name.like(f"%{name}%"))
+    names = db.session.execute(query).scalars().all()
+
+    return jsonify(mechanic_schema.dump(names, many=True)), 200
+
