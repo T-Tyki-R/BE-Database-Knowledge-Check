@@ -70,6 +70,7 @@ paths:
             email: "jdoe1995@gmail.com"
             phone: "1234567890"
             password: "PassWord123"
+
   # Display Consumers
   /consumers:
     get:
@@ -92,7 +93,7 @@ paths:
                 phone: "1234567890"
               - id: 2
                 name: "Jane Smith" 
-                email: "jsmith1@gmail.com
+                email: "jsmith1@gmail.com"
                 phone: "0987654321"
 
   # Update Consumer
@@ -123,6 +124,25 @@ paths:
               email: "jdoe1995@gmail.com"
               phone: "1234567890"
               password: "PassWord123"
+
+  # Delete Consumers
+  /consumers/delete:
+    delete:
+      tags:
+        - consumers
+      summary: "Delete Consumer Endpoint, Required Login Token"  
+      description: "Validates consumers credentials, deletes consumer data."
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Successfully Deleted Consumer"
+          schema:
+            $ref: "#/definitions/DeleteConsumerPayResponse"
+          examples:
+            application/json:
+              message: "Consumer deleted successfully"
+              status: "success"
 
 
 definitions: 
@@ -227,6 +247,21 @@ definitions:
         type: "string"
       phone:
         type: "string"
+
+  # Delete Consumers
+  DeleteConsumerPayResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      status:
+        type: "string"
+
+    required:
+      - message
+      - status
+
+
 
 
  

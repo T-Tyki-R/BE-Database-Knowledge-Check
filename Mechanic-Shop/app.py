@@ -1,5 +1,4 @@
 # Imports
-from jose import jwt
 from application import create_app
 from application.models import db
 
