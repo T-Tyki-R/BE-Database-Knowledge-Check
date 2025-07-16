@@ -1,0 +1,199 @@
+swagger: '2.0'
+info:
+  title: "mech-shop"
+  description: "This is an API"
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+securityDefinitions:
+  bearerAuth:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"  
+
+# Consumers
+# Login
+paths: 
+  /consumers/login:
+    post:
+      tags:
+        - consumers
+      summary: "Login Endpoint, (Generates Token)"  
+      description: "Validates consumers credentials, generates and return a consumer specific token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+          application/json:
+            token: "dhksueneuGUDUIDBTWKL...." # A long string of characters
+            message: "Login successful"
+            status: "success"
+
+  # Create New User
+  /consumers/create:
+    post:
+      tags:
+        - consumers
+      summary: "Create/Register a New Consumer Endpoint"  
+      description: "Create a new Consumer for our e-commerce system. Emails must be unique."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Creating a Consumer"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateConsumerPayload"
+      responses:
+        200:
+          description: "New Consumer Added"
+          schema:
+            $ref: "#/definitions/CreateConsumerResponse"
+          examples:
+          application/json:
+            id: 1
+            name: "John Doe" 
+            email: "jdoe1995@gmail.com"
+            phone: "1234567890"
+            password: "PassWord123"
+
+  # Update Consumer
+  /consumers/update:
+    put:
+      tags:
+        - consumers
+      summary: "Update Endpoint, Required Login Token"  
+      description: "Validates consumers credentials, Update consumer data."
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Update Consumer Data"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateConsumerPayload"
+      responses:
+        200:
+          description: "Successfully Updated Consumer"
+          schema:
+            $ref: "#/definitions/UpdateConsumerResponse"
+          examples:
+            application/json:
+              id: 1
+              name: "John Doe" 
+              email: "jdoe1995@gmail.com"
+              phone: "1234567890"
+              password: "PassWord123"
+
+
+definitions: 
+  LoginCredentials:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+  
+    required:
+    - email
+    - password
+
+  LoginResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+      message:
+        type: "string"
+      status:
+        type: "string"
+      
+  # Create Consumer
+  CreateConsumerPayload:
+    type: "object"
+    properties:
+      name: 
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "string"
+      password:
+        type: "string"
+
+    required:
+      - name
+      - email
+      - address
+      - phone
+      - password
+
+  CreateConsumerResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name: 
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "string"
+      password:
+        type: "string"
+  
+  # Update Consumer
+  UpdateConsumerPayload:
+    type: "object"
+    properties:
+      name: 
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "string"
+      password:
+        type: "string"
+
+    required:
+      - name
+      - email
+      - address
+      - phone
+      - password
+
+  UpdateConsumerResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name: 
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "string"
+
+
+ 
+
+
+
+      
+

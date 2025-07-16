@@ -23,7 +23,7 @@ def get_consumers():
     return jsonify(consumer_schema.dump(consumers, many=True)), 200
 
 # POST a NEW Consumer
-@consumer_bp.route('/', methods=['POST'])
+@consumer_bp.route('/create', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_consumer():
     try:
@@ -42,7 +42,7 @@ def create_consumer():
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
 
 # PUT to UPDATE a Consumer
-@consumer_bp.route('/', methods=['PUT'])
+@consumer_bp.route('/update', methods=['PUT'])
 @token_required
 def update_consumer(consumer_id):
     consumer = db.session.get(Consumer, consumer_id)
@@ -67,7 +67,7 @@ def update_consumer(consumer_id):
         return jsonify({"message": "Consumer not found"}), 404
 
 # DELETE a Consumer
-@consumer_bp.route('/', methods=['DELETE'])
+@consumer_bp.route('/delete', methods=['DELETE'])
 @token_required
 def delete_consumer(consumer_id):
     consumer = db.session.get(Consumer, consumer_id)
