@@ -70,6 +70,30 @@ paths:
             email: "jdoe1995@gmail.com"
             phone: "1234567890"
             password: "PassWord123"
+  # Display Consumers
+  /consumers:
+    get:
+      tags:
+        - consumers
+      summary: "Display Consumers Endpoint"  
+      description: "Display all consumers in the system."
+      responses:
+        200:
+          description: "Successfully Displayed Consumers"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DisplayConsumerResponse"
+          examples:
+            application/json:
+              - id: 1
+                name: "John Doe" 
+                email: "jdoe1995@gmail.com"
+                phone: "1234567890"
+              - id: 2
+                name: "Jane Smith" 
+                email: "jsmith1@gmail.com
+                phone: "0987654321"
 
   # Update Consumer
   /consumers/update:
@@ -102,6 +126,7 @@ paths:
 
 
 definitions: 
+  # Login
   LoginCredentials:
     type: "object"
     properties:
@@ -156,6 +181,19 @@ definitions:
       phone:
         type: "string"
       password:
+        type: "string"
+
+  # Display Consumers
+  DisplayConsumerResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name: 
+        type: "string"
+      email:
+        type: "string"
+      phone:
         type: "string"
   
   # Update Consumer
