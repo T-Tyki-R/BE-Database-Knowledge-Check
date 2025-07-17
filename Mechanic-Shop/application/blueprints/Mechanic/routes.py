@@ -33,7 +33,7 @@ def get_Mechanics():
         return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
 
 # POST a NEW Mechanic
-@mechanic_bp.route('/', methods=['POST'])
+@mechanic_bp.route('/create', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_Mechanic():
     try:
@@ -53,7 +53,7 @@ def create_Mechanic():
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
 
 # PUT to UPDATE a Mechanic
-@mechanic_bp.route('/', methods=['PUT'])
+@mechanic_bp.route('/update', methods=['PUT'])
 @token_required
 def update_Mechanic(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id)
@@ -80,7 +80,7 @@ def update_Mechanic(mechanic_id):
         return jsonify({"message": "Mechanic not found"}), 404
 
 # DELETE a Mechanic
-@mechanic_bp.route('/', methods=['DELETE'])
+@mechanic_bp.route('/delete', methods=['DELETE'])
 @token_required
 def delete_Mechanic(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id)
@@ -125,7 +125,7 @@ def login():
         return jsonify({"message": "Invalid email or password"}), 401
     
 # GET Display ALL Mechanics (Most - Least Number Tickets)
-@mechanic_bp.route("/popularity", methods=['GET'])
+@mechanic_bp.route("/popular", methods=['GET'])
 def popular_mechanic():
     query = select(Mechanic)
     mechanics = db.session.execute(query).scalars().all()
