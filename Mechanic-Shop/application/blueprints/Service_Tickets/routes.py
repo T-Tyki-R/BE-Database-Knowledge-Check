@@ -3,7 +3,7 @@ from flask import request, jsonify
 from sqlalchemy import select
 from marshmallow import ValidationError
 from application.models import ServiceTicket, db, Mechanic, Inventory
-from .serviceTicketSchema import service_ticket_schema, return_service_ticket_schema, edit_ticket_schema, create_service_ticket_schema
+from .serviceTicketSchema import service_tickets_schema, return_service_ticket_schema, edit_ticket_schema, create_service_ticket_schema
 from . import service_ticket_bp
 
 # Create Endpoints for CRUD operations
@@ -19,7 +19,7 @@ from . import service_ticket_bp
 def get_service_tickets():
     tickets = select(ServiceTicket)
     res = db.session.execute(tickets).scalars().all()
-    return service_ticket_schema.jsonify(res), 200
+    return service_tickets_schema.jsonify(res), 200
 
 # POST a NEW service_ticket
 @service_ticket_bp.route('/create', methods=['POST'])

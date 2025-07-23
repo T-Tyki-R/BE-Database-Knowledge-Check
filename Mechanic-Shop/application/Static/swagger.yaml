@@ -11,39 +11,39 @@ consumes:
 produces:
   - "application/json"
 
+# Security
 securityDefinitions:
   bearerAuth:
     type: "apiKey"
     name: "Authorization"
     in: "header"  
 
-# Consumers
-# Login
-paths: 
-  /consumers/login:
-    post:
+paths:
+  # Consumers
+  # Display Consumers
+  /consumers:
+    get:
       tags:
         - consumers
-      summary: "Login Endpoint, (Generates Token)"  
-      description: "Validates consumers credentials, generates and return a consumer specific token."
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Login Credentials"
-          required: true
-          schema:
-            $ref: "#/definitions/ConsumerLoginCredentials"
+      summary: "Display Consumers Endpoint"  
+      description: "Display all consumers in the system."
       responses:
         200:
-          description: "Login Successful"
+          description: "Successfully Displayed Consumers"
           schema:
-            $ref: "#/definitions/ConsumerLoginResponse"
+            type: "array"
+            items:
+              $ref: "#/definitions/DisplayConsumerResponse"
           examples:
-          application/json:
-            token: "dhksueneuGUDUIDBTWKL...." # A long string of characters
-            message: "Login successful"
-            status: "success"
-
+            application/json:
+              - id: 1
+                name: "John Doe" 
+                email: "jdoe1995@gmail.com"
+                phone: "1234567890"
+              - id: 2
+                name: "Jane Smith" 
+                email: "jsmith1@gmail.com"
+                phone: "0987654321"
   # Create New User
   /consumers/create:
     post:
@@ -70,31 +70,31 @@ paths:
             email: "jdoe1995@gmail.com"
             phone: "1234567890"
             password: "PassWord123"
-
-  # Display Consumers
-  /consumers:
-    get:
+    
+  # Login
+  /consumers/login:
+    post:
       tags:
         - consumers
-      summary: "Display Consumers Endpoint"  
-      description: "Display all consumers in the system."
+      summary: "Login Endpoint, (Generates Token)"  
+      description: "Validates consumers credentials, generates and return a consumer specific token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/ConsumerLoginCredentials"
       responses:
         200:
-          description: "Successfully Displayed Consumers"
+          description: "Login Successful"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/DisplayConsumerResponse"
+            $ref: "#/definitions/ConsumerLoginResponse"
           examples:
-            application/json:
-              - id: 1
-                name: "John Doe" 
-                email: "jdoe1995@gmail.com"
-                phone: "1234567890"
-              - id: 2
-                name: "Jane Smith" 
-                email: "jsmith1@gmail.com"
-                phone: "0987654321"
+          application/json:
+            token: "dhksueneuGUDUIDBTWKL...." # A long string of characters
+            message: "Login successful"
+            status: "success"
 
   # Update Consumer
   /consumers/update:
@@ -458,7 +458,121 @@ paths:
               - id: 2
                 name: "Break Pedal"
                 price: 110.00
-              
+
+  # Service Tickets
+  # Display Tickets
+  /service-tickets/:
+    get:
+      tags:
+        - tickets
+      summary: "Display Ticket Endpoint"
+      description: "Display all stored tickets"
+      responses:
+        200:
+         schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DisplayTicketsResponse"
+            examples:
+              application/json:
+                - id: 1
+                  consumer_id: 1
+                  vin: "12345678901234567"
+                  service_date: "2025-11-02"
+                  description: "Broken windshield wipers"
+                  mechanics:
+                    - id: 1
+                      name: "Alex"
+                      email: "alex@example.com"
+                      phone: "555-1234"
+                  parts:
+                    - id: 2
+                      name: "Wiper Blade"
+                      price: 25.00
+
+  # Create Ticket
+  /service-tickets/create:
+    post:
+      tags:
+        - tickets
+      summary: "Create/Register Ticket Endpoint"
+      description: "Create/Register a new ticket to our e-commerce system"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Creating a Ticket"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateTicketPayload"
+      responses:
+        200:
+          description: "New Ticket Added"
+          schema:
+            $ref: "#/definitions/CreateTicketResponse"
+          examples:
+          application/json:
+            - id: 1
+            - consumer_id: 1
+            - mechanics: [1]
+            - vin: "12345678901234567"
+            - service_date: 2025-11-02
+            - description: "Broken windshield wipers"
+            - parts: [2]
+
+  # Update Ticket
+  /service-tickets/update/{service_ticket_id}:
+    put:
+      tags:
+        - tickets
+      summary: "Update Ticket Endpoint"  
+      description: "Add or Remove Mechanic(s)/Parts in the stored ticket in our e-commerce system via it's ID"
+      parameters:
+        - in: "path"
+          name: "service_ticket_id"
+          description: "Input Ticket ID"
+          required: true
+          type: integer
+        - in: "body"
+          name: body
+          required: true
+          description: "Input any data that needs to be changed (optional)"
+          schema:
+            $ref: "#/definitions/UpdateTicketPayload"
+      responses:
+        200:
+          description: "Ticket Updated"
+          schema:
+            $ref: "#/definitions/UpdateTicketResponse"
+          examples:
+          application/json:
+            id: 1
+            name: "sample"
+            price: 12
+      
+  # Delete Ticket
+  /service-tickets/delete/{service_ticket_id}:
+    delete:
+      tags:
+        - tickets
+      summary: "Delete Ticket Part Endpoint"  
+      description: "Delete an ticket part stored in our e-commerce system via it's ID"
+      parameters:
+        - in: "path"
+          name: "service_ticket_id"
+          description: "Input Ticket ID"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Part deleted"
+          schema:
+            $ref: "#/definitions/DeleteTicketResponse"
+          examples:
+          application/json:
+            id: 1
+            name: "Gas Pedal"
+            price: 120.99
+
 
 
 definitions:
@@ -828,4 +942,134 @@ definitions:
         type: "number"
         format: "float"
 
+  # Tickets
+  # Display tickets
+  DisplayTicketsResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      consumer_id: 
+        type: "integer"
+      vin:
+        type: "string"
+      service_date:
+        type: "string"
+        format: "date"
+      description: 
+        type: "string"
 
+  # Create tickets
+  CreateTicketPayload:
+    type: "object"
+    properties:
+      consumer_id:
+        type: "integer"
+      mechanics:
+        type: "array"
+        items:
+          type: "integer"
+      vin: 
+        type: "string"
+      service_date:
+        type: "string"
+        format: "date"
+      description:
+        type: "string"
+      parts:
+        type: array
+        items:
+          type: "integer"
+    
+    required:
+      - consumer_id
+      - mechanics
+      - vin
+      - service_date
+      - description
+      - parts
+
+  CreateTicketResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      consumer_id: 
+        type: "integer"
+      mechanics: 
+        type: "array"
+        items:
+          $ref: "#/definitions/DisplayMechanicResponse"
+      vin:
+        type: "string"
+      service_date:
+        type: "string"
+        format: "date"
+      description: 
+        type: "string"
+      parts:
+        type: "array"
+        items:
+          $ref: "#/definitions/DisplayPartsResponse"
+
+  # Update Ticket
+  UpdateTicketPayload:
+    type: "object"
+    properties:
+      add_mechanic_ids:
+        type: "array"
+        items:
+          type: "integer"
+      remove_mechanic_ids:
+        type: "array"
+        items:
+          type: "integer"
+      add_part_ids:
+        type: "array"
+        items:
+          type: "integer"
+      remove_part_ids:
+        type: "array"
+        items:
+          type: "integer"
+    
+    required:
+      - add_mechanic_ids
+      - remove_mechanic_ids
+      - add_part_ids
+      - remove_part_ids
+
+  UpdateTicketResponse:
+    type: "object"
+    properties:
+      add_mechanic_ids:
+        type: "array"
+        items:
+          type: "integer"
+      remove_mechanic_ids:
+        type: "array"
+        items:
+          type: "integer"
+      add_part_ids:
+        type: "array"
+        items:
+          type: "integer"
+      remove_part_ids:
+        type: "array"
+        items:
+          type: "integer"
+
+  # Delete Ticket
+    # Delete Mechanics
+  DeleteTicketResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      status:
+        type: "string"
+
+    required:
+      - message
+      - status
+      
