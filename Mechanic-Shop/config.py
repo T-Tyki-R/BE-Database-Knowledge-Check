@@ -5,7 +5,9 @@ class DevelopmentConfig:
     RATELIMIT_STORAGE_URI = 'redis://localhost:6379/0'
 
 class TestingConfig:
-    pass
+    SQLALCHEMY_DATABASE_URL = 'sql:///testing.db'
+    DEBUG = True
+    CACHE_TYPE = 'SimpleCache'
 
 class ProductionConfig:
     pass

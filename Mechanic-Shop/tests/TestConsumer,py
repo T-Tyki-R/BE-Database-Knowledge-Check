@@ -1,0 +1,26 @@
+# Imports
+from app import create_app
+from application.models import db
+import unittest
+
+
+class TestConsumer(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app("TestingConfig")
+        with self.app.app_context:
+            db.drop_all()
+            db.create_all()
+        self.client = self.app.test_client()
+
+    def test_create_consumer(self):
+        consumer_payload = {
+            "name": "Naruto Uzumaki",
+            "email" : "ichirakuramen1@email.com",
+            "phone" : "0009990000",
+            "password" : "fishCakeSpiral1"
+        }
+
+        response = self.client.post('/consumers/', json= consumer_payload)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json['name'], "Naruto Uzumaki")
+

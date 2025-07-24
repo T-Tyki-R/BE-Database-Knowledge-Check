@@ -9,4 +9,4 @@ with app.app_context():
     db.create_all()
 
 # Run the Flask app
-app.run()
+app.run(debug= True)
