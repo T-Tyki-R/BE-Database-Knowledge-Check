@@ -2,7 +2,7 @@
 from flask import request, jsonify
 from marshmallow import ValidationError
 from application.models import Mechanic, db
-from .mechanicSchema import mechanic_schema, logins_schema
+from .mechanicSchema import mechanic_schema, logins_schema, mechanics_display_schema
 from . import mechanic_bp
 from sqlalchemy import select
 from application.extensions import limiter, cache
@@ -22,32 +22,41 @@ from application.Utils.util import encode_token, token_required
 def get_Mechanics():
     try:
         page = int(request.args.get("page", 1))
-        per_page = int(request.args.get("per_page", 2))
+        per_page = int(request.args.get("per_page", 5))
 
         query = select(Mechanic)
         mechanics = db.paginate(query, page = page, per_page = per_page)
-        return jsonify(mechanic_schema.dump(mechanics.items, many=True)), 200
+        return jsonify(mechanics_display_schema.dump(mechanics.items)), 200
     except:
         query = select(Mechanic)
         mechanics = db.session.execute(query).scalars().all()
-        return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
+        return jsonify(mechanics_display_schema.dump(mechanics)), 200
 
 # POST a NEW Mechanic
 @mechanic_bp.route('/create', methods=['POST'])
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_Mechanic():
     try:
-        name = request.json.get('name')
-        email = request.json.get('email')
-        phone = request.json.get('phone')
-        salary = request.json.get('salary', 0.00)  # Default salary to 0 if not provided
-        password = request.json.get('password')
-        new_mechanic = Mechanic(name=name, email=email, phone=phone, salary=salary, password=password)
+        data = request.get_json()
+
+        new_mechanic = Mechanic(
+            name = data['name'],
+            email = data['email'],
+            phone = data['phone'],
+	        salary = data['salary'],
+            password = data['password']
+        )
+
         db.session.add(new_mechanic)
         db.session.commit()
+
         return jsonify({
             "message": "Mechanic created successfully",
-            "Mechanic": mechanic_schema.dump(new_mechanic)
+            "mechanic_id" : new_mechanic.mechanic_id,
+            "name" : new_mechanic.name,
+            "email" : new_mechanic.email,
+	        "salary" : new_mechanic.salary,
+            "phone" : new_mechanic.phone
         }), 201
     except ValidationError as e:
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
@@ -133,7 +142,7 @@ def popular_mechanic():
     # Create a lambda function sort list in descending order
     mechanics.sort(key = lambda mechanic : len(mechanic.service_tickets), reverse = True)
 
-    return jsonify(mechanic_schema.dump(mechanics, many=True)), 200
+    return jsonify(mechanics_display_schema.dump(mechanics, many=True)), 200
 
 @mechanic_bp.route("/search", methods=['GET'])
 def search_mechanic():
@@ -143,5 +152,5 @@ def search_mechanic():
     query = select(Mechanic).where(Mechanic.name.like(f"%{name}%"))
     names = db.session.execute(query).scalars().all()
 
-    return jsonify(mechanic_schema.dump(names, many=True)), 200
+    return jsonify(mechanics_display_schema.dump(names, many=True)), 200
 

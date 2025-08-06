@@ -27,44 +27,79 @@ def get_consumers():
 @limiter.limit("5 per minute")  # Rate limit to 5 requests per minute
 def create_consumer():
     try:
-        name = request.json.get('name')
-        email = request.json.get('email')
-        phone = request.json.get('phone')
-        password = request.json.get('password')
-        new_consumer = Consumer(name=name, email=email, phone=phone, password=password)
+
+        data = request.get_json()
+
+        if not data.get('name'):
+            return jsonify({"name": ["Missing field: Name"]}), 400
+        if not data.get('email'):
+            return jsonify({"email": ["Missing field: Email"]}), 400
+        if not data.get('phone'):
+            return jsonify({"phone": ["Missing field: Phone"]}), 400
+        if not data.get('password'):
+            return jsonify({"password": ["Missing field: Password"]}), 400
+        
+        new_consumer = Consumer(
+            name = data['name'],
+            email = data['email'],
+            phone = data['phone'],
+            password = data['password']
+        )
+
         db.session.add(new_consumer)
         db.session.commit()
+
         return jsonify({
             "message": "Consumer created successfully",
-            "consumer": consumer_schema.dump(new_consumer)
+            "consumer_id": new_consumer.consumer_id,
+            "name": new_consumer.name,
+            "email": new_consumer.email,
+            "phone": new_consumer.phone
         }), 201
-    except ValidationError as e:
-        return jsonify({"message": "Invalid input", "errors": e.messages}), 400
+        
+    except KeyError as e:
+        return jsonify({"error": f"Missing required field: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"error": "An error occurred while creating consumer"}), 500
 
 # PUT to UPDATE a Consumer
 @consumer_bp.route('/update', methods=['PUT'])
 @token_required
-def update_consumer(consumer_id):
-    consumer = db.session.get(Consumer, consumer_id)
-    if consumer:
-        try:
-            name = request.json.get('name')
-            email = request.json.get('email')
-            phone = request.json.get('phone')
-            password = request.json.get('password')
-            consumer.name = name
-            consumer.email = email
-            consumer.phone = phone
-            consumer.password = password
-            db.session.commit()
-            return jsonify({
-                "message": f"Consumer #{consumer_id} was updated successfully",
-                "consumer": consumer_schema.dump(consumer)
-            }), 200
-        except ValidationError as e:
-            return jsonify({"message": "Invalid input", "errors": e.messages}), 400
-    else:
-        return jsonify({"message": "Consumer not found"}), 404
+def update_consumer(consumer_id):  # consumer_id comes from token_required decorator
+    try:
+        consumer = db.session.get(Consumer, consumer_id)
+        
+        if not consumer:
+            return jsonify({"message": "Consumer not found"}), 404
+        
+        data = request.get_json()
+        
+        # Check if JSON data is provided
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+        
+        # Update fields if provided (no empty validation for updates)
+        if 'name' in data:
+            consumer.name = data['name']
+        if 'email' in data:
+            consumer.email = data['email']
+        if 'phone' in data:
+            consumer.phone = data['phone']
+        if 'password' in data:
+            consumer.password = data['password']
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Consumer updated successfully",
+            "consumer_id": consumer.consumer_id,
+            "name": consumer.name,
+            "email": consumer.email,
+            "phone": consumer.phone
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # DELETE a Consumer
 @consumer_bp.route('/delete', methods=['DELETE'])
@@ -109,4 +144,4 @@ def login():
         }
         return jsonify(response), 200
     else:
-        return jsonify({"message": "Invalid email or password"}), 401
+        return jsonify({"message": "Invalid email or password"}), 400

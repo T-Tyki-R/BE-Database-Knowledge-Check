@@ -22,15 +22,34 @@ def get_part():
 @inventory_bp.route('/create', methods=['POST'])
 def create_part():
     try:
-        new_part = inventory_schema.load(request.json)
+
+        data = request.get_json()
+
+        if not data.get('name'):
+            return jsonify({"name": "Missing field: Name"}), 400
+        if not data.get('price'):
+            return jsonify({"price": "Missing field: Price"}), 400
+
+        
+        new_part = Inventory(
+            name = data['name'],
+            price = data['price']
+        )
+
         db.session.add(new_part)
         db.session.commit()
+
         return jsonify({
-            "message": "Part created successfully",
-            "part": inventory_schema.dump(new_part)
+            "message": "part created successfully",
+            "part_id": new_part.inventory_id,
+            "name": new_part.name,
+            "price": new_part.price
         }), 201
-    except ValidationError as e:
-        return jsonify({"message": "Invalid input", "errors": e.messages}), 400
+        
+    except KeyError as e:
+        return jsonify({"error": f"Missing required field: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"error": "An error occurred while creating part"}), 500
 
 # PUT to UPDATE an Inventory Part
 @inventory_bp.route('/update/<int:inventory_id>', methods=['PUT'])
@@ -38,14 +57,19 @@ def update_part(inventory_id):
     part = db.session.get(Inventory, inventory_id)
     if part:
         try:
-            name = request.json.get('name')
-            price = request.json.get('price')
-            part.name = name
-            part.price = price
+            data = request.get_json()
+
+            if "name" in data:
+                part.name = data['name']
+            if "price" in data:
+                part.price = data["price"]
+
             db.session.commit()
             return jsonify({
                 "message": f"part #{inventory_id} was updated successfully",
-                "inventory": inventory_schema.dump(part)
+                "inventory_id" : part.inventory_id,
+                "name" : part.name,
+                "price" : part.price
             }), 200
         except ValidationError as e:
             return jsonify({"message": "Invalid input", "errors": e.messages}), 400

@@ -8,5 +8,14 @@ class MechanicSchema(ma.SQLAlchemyAutoSchema):
         model = Mechanic
         load_instance = True
 
+class MechanicDisplaySchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Mechanic
+        load_instance = True
+        fields = ("mechanic_id", "name", "email", "phone")  # Only include safe fields
+
+# Schema instances
 mechanic_schema = MechanicSchema()
-logins_schema = MechanicSchema(exclude=('name', 'phone', 'salary'))  # Exclude sensitive fields for login
+mechanic_display_schema = MechanicDisplaySchema()
+mechanics_display_schema = MechanicDisplaySchema(many=True)
+logins_schema = MechanicSchema(exclude=('name', 'email', 'phone'))  # Exclude sensitive fields for login
