@@ -31,13 +31,13 @@ def create_consumer():
         data = request.get_json()
 
         if not data.get('name'):
-            return jsonify({"name": ["Missing field: Name"]}), 400
+            return jsonify({"name": "Missing field: Name"}), 400
         if not data.get('email'):
-            return jsonify({"email": ["Missing field: Email"]}), 400
+            return jsonify({"email": "Missing field: Email"}), 400
         if not data.get('phone'):
-            return jsonify({"phone": ["Missing field: Phone"]}), 400
+            return jsonify({"phone": "Missing field: Phone"}), 400
         if not data.get('password'):
-            return jsonify({"password": ["Missing field: Password"]}), 400
+            return jsonify({"password": "Missing field: Password"}), 400
         
         new_consumer = Consumer(
             name = data['name'],
@@ -73,10 +73,6 @@ def update_consumer(consumer_id):  # consumer_id comes from token_required decor
             return jsonify({"message": "Consumer not found"}), 404
         
         data = request.get_json()
-        
-        # Check if JSON data is provided
-        if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
         
         # Update fields if provided (no empty validation for updates)
         if 'name' in data:

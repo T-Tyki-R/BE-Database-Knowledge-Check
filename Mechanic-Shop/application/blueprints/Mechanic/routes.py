@@ -39,6 +39,17 @@ def create_Mechanic():
     try:
         data = request.get_json()
 
+        if not data.get('name'):
+            return jsonify({"name": "Missing field: Name"}), 400
+        if not data.get('email'):
+            return jsonify({"email": "Missing field: Email"}), 400
+        if not data.get('phone'):
+            return jsonify({"phone": "Missing field: Phone"}), 400
+        if not data.get('salary'):
+            return jsonify({"salary": "Missing field: Salary"}), 400
+        if not data.get('password'):
+            return jsonify({"password": "Missing field: Password"}), 400
+
         new_mechanic = Mechanic(
             name = data['name'],
             email = data['email'],
@@ -121,7 +132,7 @@ def login():
     )
     mechanic = db.session.execute(query).scalars().first()
 
-    if Mechanic:
+    if mechanic:
         # Generate JWT token
         token = encode_token(mechanic.mechanic_id)
         response = {
@@ -131,7 +142,7 @@ def login():
         }
         return jsonify(response), 200
     else:
-        return jsonify({"message": "Invalid email or password"}), 401
+        return jsonify({"message": "Invalid email or password"}), 400
     
 # GET Display ALL Mechanics (Most - Least Number Tickets)
 @mechanic_bp.route("/popular", methods=['GET'])
