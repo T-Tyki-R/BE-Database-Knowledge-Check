@@ -18,4 +18,4 @@ class MechanicDisplaySchema(ma.SQLAlchemyAutoSchema):
 mechanic_schema = MechanicSchema()
 mechanic_display_schema = MechanicDisplaySchema()
 mechanics_display_schema = MechanicDisplaySchema(many=True)
-logins_schema = MechanicSchema(exclude=('name', 'email', 'phone'))  # Exclude sensitive fields for login
+logins_schema = MechanicSchema(exclude=('name', "salary", 'phone'))  # Exclude sensitive fields for login

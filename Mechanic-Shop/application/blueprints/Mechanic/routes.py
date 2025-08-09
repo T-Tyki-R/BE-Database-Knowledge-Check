@@ -76,28 +76,38 @@ def create_Mechanic():
 @mechanic_bp.route('/update', methods=['PUT'])
 @token_required
 def update_Mechanic(mechanic_id):
-    mechanic = db.session.get(Mechanic, mechanic_id)
-    if mechanic:
-        try:
-            name = request.json.get('name')
-            email = request.json.get('email')
-            phone = request.json.get('phone')
-            salary = request.json.get('salary', mechanic.salary)  # Use existing salary if not provided
-            password = request.json.get('password')
-            mechanic.name = name
-            mechanic.email = email
-            mechanic.phone = phone
-            mechanic.salary = salary
-            mechanic.password = password
-            db.session.commit()
-            return jsonify({
-                "message": f"Mechanic #{mechanic_id} was updated successfully",
-                "Mechanic": mechanic_schema.dump(mechanic)
+    try:
+        mechanic = db.session.get(Mechanic, mechanic_id)
+        if not mechanic:
+                return jsonify({"message": "Mechnaic not found"}), 404
+            
+        data = request.get_json()
+            
+            # Update fields if provided (no empty validation for updates)
+        if 'name' in data:
+                mechanic.name = data['name']
+        if 'email' in data:
+                mechanic.email = data['email']
+        if 'phone' in data:
+                mechanic.phone = data['phone']
+        if 'salary' in data:
+                mechanic.salary = data['salary']
+        if 'password' in data:
+                mechanic.password = data['password']
+            
+        db.session.commit()
+            
+        return jsonify({
+                "message": "mechanic updated successfully",
+                "mechanic_id": mechanic.mechanic_id,
+                "name": mechanic.name,
+                "email": mechanic.email,
+                "salary": mechanic.salary,
+                "phone": mechanic.phone
             }), 200
-        except ValidationError as e:
-            return jsonify({"message": "Invalid input", "errors": e.messages}), 400
-    else:
-        return jsonify({"message": "Mechanic not found"}), 404
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # DELETE a Mechanic
 @mechanic_bp.route('/delete', methods=['DELETE'])
