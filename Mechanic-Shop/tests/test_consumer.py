@@ -97,5 +97,40 @@ class TestConsumer(unittest.TestCase):
 
         response = self.client.put('/consumers/update', json=update_payload)
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json['message'], "You must be logged in to access")
+
+    #Successful Delete Test
+    def test_delete_consumer(self):
+        delete_payload = {
+            "name": "",
+            "email" : "",
+            "phone" : "",
+            "password" : ""
+        }
+
+        headers = {'Authorization': "Bearer " + self.test_login_consumer()}
+
+        response = self.client.delete('/consumers/delete', json=delete_payload, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    # Failed Delete Test
+    def test_delete_consumer_fail(self):
+        delete_payload = {
+            "name": "",
+            "email" : "",
+            "phone" : "",
+            "password" : ""
+        }
+
+        response = self.client.delete('/consumers/delete', json=delete_payload)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json['message'], "You must be logged in to access") 
+    
+
+    # Successful Get/Display Test
+    def test_display_consumer_paginated(self):
+    
+        response = self.client.get("/consumers/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]["name"], "test_user")
 

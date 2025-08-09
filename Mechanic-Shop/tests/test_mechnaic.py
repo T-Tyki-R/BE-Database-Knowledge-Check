@@ -102,3 +102,57 @@ class TestmMechanic(unittest.TestCase):
         response = self.client.put('/mechanics/update', json=update_payload)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json['message'], "You must be logged in to access") 
+
+    #Successful Delete Test
+    def test_delete_mechanic(self):
+        delete_payload = {
+            "name": "",
+            "email" : "",
+            "phone" : "",
+            "salary": 0,
+            "password" : ""
+        }
+
+        headers = {'Authorization': "Bearer " + self.test_login_mechanic()}
+
+        response = self.client.delete('/mechanics/delete', json=delete_payload, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    # Failed Delete Test
+    def test_delete_mechanic_fail(self):
+        delete_payload = {
+            "name": "",
+            "email" : "",
+            "phone" : "",
+            "salary": 0,
+            "password" : ""
+        }
+
+        response = self.client.delete('/mechanics/delete', json=delete_payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json['message'], "You must be logged in to access") 
+    
+
+    # Successful Get/Display Test
+    def test_display_mechanic_paginated(self):
+    
+        response = self.client.get("/mechanics/?page=1&per_page=5")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]["name"], "test_user")
+
+    # Successful Get/Search Test
+    def test_search_mechanic(self):
+        
+        response = self.client.get("/mechanics/?search=test")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]["name"], "test_user")
+    
+    # Successful Get/Display (Popular) Test
+    def test_display_popular_mechanics(self):
+        
+        response = self.client.get("/mechanics/popular")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json[0]["name"], "test_user")
+
+
+

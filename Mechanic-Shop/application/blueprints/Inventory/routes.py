@@ -54,27 +54,30 @@ def create_part():
 # PUT to UPDATE an Inventory Part
 @inventory_bp.route('/update/<int:inventory_id>', methods=['PUT'])
 def update_part(inventory_id):
-    part = db.session.get(Inventory, inventory_id)
-    if part:
-        try:
-            data = request.get_json()
-
-            if "name" in data:
-                part.name = data['name']
-            if "price" in data:
-                part.price = data["price"]
-
-            db.session.commit()
-            return jsonify({
-                "message": f"part #{inventory_id} was updated successfully",
-                "inventory_id" : part.inventory_id,
-                "name" : part.name,
-                "price" : part.price
-            }), 200
-        except ValidationError as e:
-            return jsonify({"message": "Invalid input", "errors": e.messages}), 400
-    else:
-        return jsonify({"message": "inventory not found"}), 404
+    try:
+        inventory = db.session.get(Inventory, inventory_id)
+        
+        if not inventory:
+            return jsonify({"message": "part not found"}), 404
+        
+        data = request.get_json()
+        
+        # Update fields if provided (no empty validation for updates)
+        if 'name' in data:
+            inventory.name = data['name']
+        if 'price' in data:
+            inventory.price = data['price']
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "inventory updated successfully",
+            "inventory_id": inventory.inventory_id,
+            "name": inventory.name,
+            "price": inventory.price,
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # DELETE a Inventory Part
 @inventory_bp.route('/delete/<int:inventory_id>', methods=['DELETE'])
