@@ -1,4 +1,4 @@
-nname: Flask CI
+name: Flask CI
 
 on:
   push:
@@ -60,4 +60,3 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests -p 'test_*.py'
 
-  
