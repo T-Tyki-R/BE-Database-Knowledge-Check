@@ -3,7 +3,6 @@ from application import create_app
 from application.models import db, Consumer
 from application.Utils.util import encode_token
 import unittest
-import pytest
 
 
 class TestConsumer(unittest.TestCase):

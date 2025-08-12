@@ -2,7 +2,6 @@
 from application import create_app
 from application.models import db, Inventory
 import unittest
-import pytest
 
 
 class TestInventory(unittest.TestCase):
