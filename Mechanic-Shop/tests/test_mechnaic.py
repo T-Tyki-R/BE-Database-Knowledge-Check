@@ -3,7 +3,6 @@ from application import create_app
 from application.models import db, Mechanic
 from application.Utils.util import encode_token
 import unittest
-import pytest
 
 
 class TestmMechanic(unittest.TestCase):
@@ -30,10 +29,10 @@ class TestmMechanic(unittest.TestCase):
         }
 
         response = self.client.post('/mechanics/create', json= mechanic_payload)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['name'], "Naruto Uzumaki")
 
-    # # Failed Creation Test
+     # Failed Creation Test
     def test_create_mechanic_fail(self):
         mechanic_payload = {
             "name": "Naruto Uzumaki",

@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
-  title: "mech-shop"
-  description: "This is an API"
+  title: "Mech-Shop API"
+  description: "This is a mock API for creating and maintaining a mechanic shop database"
   version: "1.0.0"
 host: "127.0.0.1:5000"
 schemes:
@@ -146,32 +146,32 @@ paths:
 
 
 # Mechanics
-# Login 
-  /mechanics/login:
-    post:
+# Display mechanics
+  /mechanics:
+    get:
       tags:
         - mechanics
-      summary: "Login Endpoint, (Generates Token)"  
-      description: "Validates mechanics credentials, generates and return a consumer specific token."
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Login Credentials"
-          required: true
-          schema:
-            $ref: "#/definitions/MechanicLoginCredentials"
+      summary: "Display Mechanics Endpoint"  
+      description: "Display all mechanics in the system."
       responses:
         200:
-          description: "Login Successful"
+          description: "Successfully Displayed mechanics"
           schema:
-            $ref: "#/definitions/MechanicLoginResponse"
+            type: "array"
+            items:
+              $ref: "#/definitions/DisplayMechanicResponse"
           examples:
-          application/json:
-            token: "dhksueneuGUDUIDBTWKL...." # A long string of characters
-            message: "Login successful"
-            status: "success"
+            application/json:
+              - id: 1
+                name: "John Doe" 
+                email: "jdoe1995@gmail.com"
+                phone: "1234567890"
+              - id: 2
+                name: "Jane Smith" 
+                email: "jsmith1@gmail.com"
+                phone: "0987654321"
 
-  # Create New User
+# Create New User
   /mechanics/create:
     post:
       tags:
@@ -198,31 +198,32 @@ paths:
             phone: "1234567890"
             password: "PassWord123"
 
-  # Display mechanics
-  /mechanics:
-    get:
+# Login 
+  /mechanics/login:
+    post:
       tags:
         - mechanics
-      summary: "Display Mechanics Endpoint"  
-      description: "Display all mechanics in the system."
+      summary: "Login Endpoint, (Generates Token)"  
+      description: "Validates mechanics credentials, generates and return a consumer specific token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicLoginCredentials"
       responses:
         200:
-          description: "Successfully Displayed mechanics"
+          description: "Login Successful"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/DisplayMechanicResponse"
+            $ref: "#/definitions/MechanicLoginResponse"
           examples:
-            application/json:
-              - id: 1
-                name: "John Doe" 
-                email: "jdoe1995@gmail.com"
-                phone: "1234567890"
-              - id: 2
-                name: "Jane Smith" 
-                email: "jsmith1@gmail.com"
-                phone: "0987654321"
+          application/json:
+            token: "dhksueneuGUDUIDBTWKL...." # A long string of characters
+            message: "Login successful"
+            status: "success"
 
+  
   # Update Mechanic
   /mechanics/update:
     put:
@@ -328,6 +329,29 @@ paths:
                 phone: "0987654321"
 
 # inventory
+ # Display parts
+  /inventory:
+    get:
+      tags:
+        - inventory
+      summary: "Display parts Endpoint"  
+      description: "Display all parts in the system."
+      responses:
+        200:
+          description: "Successfully Displayed parts"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/DisplayPartsResponse"
+          examples:
+            application/json:
+              - id: 1
+                name: "Windshield Wipers" 
+                price: 20.99
+              - id: 2 
+                name: "Left Blanker Light" 
+                price: 69.99
+
   # Create new part
   /inventory/create:
     post:
@@ -352,29 +376,6 @@ paths:
             id: 1
             name: "Gas Pedal"
             price: 120.99
-
-  # Display parts
-  /inventory:
-    get:
-      tags:
-        - inventory
-      summary: "Display parts Endpoint"  
-      description: "Display all parts in the system."
-      responses:
-        200:
-          description: "Successfully Displayed parts"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/DisplayPartsResponse"
-          examples:
-            application/json:
-              - id: 1
-                name: "Windshield Wipers" 
-                price: 20.99
-              - id: 2 
-                name: "Left Blanker Light" 
-                price: 69.99
 
   # Update part
   /inventory/update/{inventory_id}:

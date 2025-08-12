@@ -68,7 +68,7 @@ def create_Mechanic():
             "email" : new_mechanic.email,
 	        "salary" : new_mechanic.salary,
             "phone" : new_mechanic.phone
-        }), 201
+        }), 200
     except ValidationError as e:
         return jsonify({"message": "Invalid input", "errors": e.messages}), 400
 
