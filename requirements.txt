@@ -1,7 +1,6 @@
 blinker==1.9.0
 cachelib==0.13.0
 click==8.2.1
-** cryptography==45.0.4 **?
 Deprecated==1.2.18
 ecdsa==0.19.1
 Flask==3.1.1
