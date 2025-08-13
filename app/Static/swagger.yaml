@@ -1073,4 +1073,7 @@ definitions:
     required:
       - message
       - status
+
+# Changed the dir name to static for Swagger
+
       
