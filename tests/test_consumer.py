@@ -1,7 +1,7 @@
 # Imports
-from application import create_app
-from application.models import db, Consumer
-from application.Utils.util import encode_token
+from app import create_app
+from app.models import db, Consumer
+from app.Utils.util import encode_token
 import unittest
 
 

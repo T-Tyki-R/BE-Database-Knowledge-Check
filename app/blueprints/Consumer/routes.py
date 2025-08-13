@@ -2,11 +2,11 @@
 from flask import request, jsonify
 from marshmallow import ValidationError
 from sqlalchemy import select
-from application.models import Consumer, db
-from application.extensions import limiter, cache
+from app.models import Consumer, db
+from app.extensions import limiter, cache
 from .consumerSchema import consumer_schema, logins_schema
 from . import consumer_bp
-from application.Utils.util import encode_token, token_required
+from app.Utils.util import encode_token, token_required
 
 # Create Endpoints for CRUD operations
 # Consumer Endpoints

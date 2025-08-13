@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from marshmallow import ValidationError
 from sqlalchemy import select
-from application.models import Inventory, db
+from app.models import Inventory, db
 from .inventorySchema import inventory_schema
 from . import inventory_bp
 

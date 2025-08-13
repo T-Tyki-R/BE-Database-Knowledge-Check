@@ -4,9 +4,9 @@ from jose import jwt
 import jose
 from functools import wraps
 from flask import request, jsonify
+import os
 
-# Create Secret Key
-SECRET_KEY = "super-duper-secret"
+SECRET_KEY = os.environ.get('SECRET_KEY') or "super-duper-secret"
 
 def encode_token(consumer_id):
     payload = {

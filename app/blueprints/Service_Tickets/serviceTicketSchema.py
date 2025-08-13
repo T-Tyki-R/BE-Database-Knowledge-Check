@@ -1,7 +1,7 @@
 # Imports
-from application.extensions import ma
+from app.extensions import ma
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from application.models import ServiceTicket
+from app.models import ServiceTicket
 from marshmallow import fields
 
 class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):

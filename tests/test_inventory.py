@@ -1,6 +1,6 @@
 # Imports
-from application import create_app
-from application.models import db, Inventory
+from app import create_app
+from app.models import db, Inventory
 import unittest
 
 

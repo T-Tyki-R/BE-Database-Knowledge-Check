@@ -2,7 +2,7 @@
 from flask import request, jsonify
 from sqlalchemy import select
 from marshmallow import ValidationError
-from application.models import ServiceTicket, db, Mechanic, Inventory
+from app.models import ServiceTicket, db, Mechanic, Inventory
 from .serviceTicketSchema import service_tickets_schema, return_service_ticket_schema, edit_ticket_schema, create_service_ticket_schema
 from . import service_ticket_bp
 

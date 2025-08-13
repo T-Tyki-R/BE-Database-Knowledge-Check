@@ -1,12 +1,12 @@
 # Imports
 from flask import request, jsonify
 from marshmallow import ValidationError
-from application.models import Mechanic, db
+from app.models import Mechanic, db
 from .mechanicSchema import mechanic_schema, logins_schema, mechanics_display_schema
 from . import mechanic_bp
 from sqlalchemy import select
-from application.extensions import limiter, cache
-from application.Utils.util import encode_token, token_required
+from app.extensions import limiter, cache
+from app.Utils.util import encode_token, token_required
 
 # Create Endpoints for CRUD operations
 # Mechanic Endpoints
