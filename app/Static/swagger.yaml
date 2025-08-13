@@ -1074,6 +1074,4 @@ definitions:
       - message
       - status
 
-# Changed the dir name to static for Swagger
-
       
