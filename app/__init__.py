@@ -38,6 +38,9 @@ def create_app(config_name):
     # Initialize Cache
     cache.init_app(app)
 
+    @app.route('/')
+    def home(): return {"message": "Mech-Shop API is running"}, 200
+
     # Register Blueprints
     app.register_blueprint(consumer_bp, url_prefix='/consumers')
     app.register_blueprint(mechanic_bp, url_prefix='/mechanics')
